@@ -7,7 +7,7 @@ var findit = require('findit');
 var duplex = require('duplexify')
 var from = require('from2');
 
-module.exports = function (inStream) {
+module.exports = function (inStream, options = {}) {
     var id = Math.floor(Math.random() * (1<<30)).toString(16);
     var tmpDir = path.join('/tmp', id);
     var zipFile = path.join('/tmp', id + '.zip');
@@ -40,6 +40,9 @@ module.exports = function (inStream) {
             s.on('end', next.ok.bind(null, files));
         })
         .seq(function (files) {
+            if(options.shapefileName){
+              files = [options.shapefileName];
+            }
             if (files.length === 0) {
                 this('no .shp files found in the archive');
             }
