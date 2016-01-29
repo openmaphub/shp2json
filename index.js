@@ -6,6 +6,7 @@ var seq = require('seq');
 var findit = require('findit');
 var duplex = require('duplexify')
 var from = require('from2');
+var debug = require('debug')('shp2json');
 
 module.exports = function (inStream, options) {
     if(!options) options = {};
@@ -42,7 +43,13 @@ module.exports = function (inStream, options) {
         })
         .seq(function (files) {
             if(options.shapefileName){
-              files = [options.shapefileName];
+              var selectedFile = null;
+              files.forEach(function(file){
+                if(file.endsWith(options.shapefileName)){
+                  selectedFile = file;
+                }
+              })
+              files = [selectedFile];
             }
             if (files.length === 0) {
                 this('no .shp files found in the archive');
@@ -52,6 +59,7 @@ module.exports = function (inStream, options) {
                     + ' expecting a single file')
             }
             else {
+                debug('opening file: ' + files[0]);
                 var shp = gdal.open(files[0]);
                 var layerCount = shp.layers.count();
 
