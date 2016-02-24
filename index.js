@@ -99,6 +99,9 @@ module.exports = function (inStream, options) {
 
                       try {
                           var geom = feature.getGeometry();
+                          if(!geom){
+                              return writeNextFeature();
+                          }
                       } catch (e) {
                           return writeNextFeature();
                       }
